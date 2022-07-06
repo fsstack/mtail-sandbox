@@ -1,0 +1,36 @@
+counter kamailio_error
+
+counter kamailio_destination_down by host
+
+counter kamailio_out_of_files_handles
+
+# Look for various kamailio errors related messages
+/kamailio.*core\/forward.h/ {
+    kamailio_error++
+}
+
+/kamailio.*failed to reply stateful/ {
+    kamailio_error++
+}
+
+/kamailio.*tcp_read_req: error reading/ {
+    kamailio_error++
+}
+
+/kamailio.*SSL routines:ssl3_read_bytes:sslv3 alert bad certificate/ {
+    kamailio_error++
+}
+
+/kamailio.*ERROR:/ {
+    kamailio_error++
+}
+
+# Look for destination down messages
+/kamailio.*destination down: OPTIONS (?P<host>[a-z]+)/ {
+    kamailio_destination_down[$host]++
+}
+
+# Look for out of files handles
+/kamailio.*core\/tcp_main.*send_fd_queue_run\(\): send_fd failed on socket/ {
+    kamailio_out_of_files_handles++
+}
